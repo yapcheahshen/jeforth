@@ -1,0 +1,22 @@
+﻿<HTML>
+<title>eForth in Javascript</title>
+<body>
+<input id="tib" value=": 平方 dup * . ; 8 平方" size=60 onkeydown="if (13===event.keyCode) fortheval()"></input><button onclick="fortheval()">Run</button><br/>
+<textarea id="output" cols=60 rows=20></textarea>
+
+<script src="jeforth.js"></script>
+<script>
+  var kvm=new KsanaVm();
+  var output=document.getElementById("output");
+  kvm.ticktype=ticktype;  
+  
+  function fortheval() {
+    var tib=document.getElementById("tib");
+    kvm.exec(tib.value);
+  }
+  
+  function ticktype(t) {  output.value=output.value+t; }  // 輸出
+</script>
+<a href="jeforth.html">影音說明</a>
+</body>
+</HTML>

@@ -1,0 +1,43 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<canvas id="cv" width=300 height=200></canvas>
+<title>jeforth 雲端易符 Javascript eForth</title>
+<script src="jeforth.js"> // jeforth 雲端易符之虛擬機 KsanaVm 定義 // </script>
+</head><body>
+<br/><textarea id="tib" cols=80 rows=10 size="60" onkeydown="if (13===event.keyCode) fortheval()">
+canvas: cv
+s" #8ac6e5" cv :! strokeStyle
+3 cv :! lineWidth
+cv :: beginPath
+10 10 cv :: moveTo
+50 50 cv :: lineTo
+cv :: stroke
+</textarea>
+<button
+id=”run” onclick="fortheval()">Run</button><br>
+<div
+id="log" style="overflow: auto; height: 250px; width: 100%;" ></div> <!-- 操作記錄, 藍色表示輸入, 黑色表示輸出, 紫色表示系統訊息 -->
+
+</body>
+<script>
+ var kvm=new KsanaVm();
+ var log=document.getElementById("log");
+ log.innerHTML="<font color='green'>jeforth 雲端易符 Javascript eForth</font><br />\n";
+ var tib=document.getElementById("tib");
+ 
+
+
+
+ kvm.ticktype=ticktype;
+ function fortheval() {
+    if (!kvm.getcompiling())log.innerHTML+="<br />\n";
+    log.innerHTML+="<font color='blue'>"+tib.value+"</font>\n";
+    kvm.exec(tib.value);
+    if (!kvm.getcompiling() && !kvm.geterror()){
+      log.innerHTML+="<font color='pink'> ok</font>";
+      log.scrollTop = log.scrollHeight; 
+    }
+ }
+ function ticktype(t){log.innerHTML=log.innerHTML+t;}  // 輸出
+</script>
+</html>

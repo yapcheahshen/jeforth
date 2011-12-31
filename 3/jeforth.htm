@@ -1,0 +1,106 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<canvas id="cv" width=300 height=200></canvas>
+<title>jeforth 雲端易符 Javascript eForth</title>
+<script src="jeforth.js"> // jeforth 雲端易符之虛擬機 KsanaVm 定義 // </script>
+</head><body>
+<br/><textarea id="tib" cols=80 rows=10 size="60" onkeydown="if (13===event.keyCode) fortheval()">
+reboot
+canvas: cv
+: value create , does r> @ ;
+s" new Date()" jseval value now  \ must initialize now to Date object in order to find getHours method
+
+variable seconds now :: getSeconds seconds !
+variable minutes now :: getMinutes minutes !
+variable hours now :: getHours hours !
+
+s" Math.PI" jseval constant PI
+100 constant RX
+100 constant RY
+
+  : 畫針
+    swap \  ( 長度 刻度 )
+    cv :: save
+    RX RY cv :: translate \ 移動座標系
+    \ 取刻度
+    60 / 2 * 1 2 /  - PI * cv :: rotate  \ 旋轉座標系
+    cv :: beginPath
+    0 0 cv :: moveTo
+      0 cv :: lineTo   \ 取長度
+    cv :: closePath
+    cv :: stroke
+    cv :: restore
+  ;
+  
+  : 畫時針 5 cv :! lineWidth s" green" cv :! strokeStyle 60 畫針 ;
+  : 畫分針 3 cv :! lineWidth s" navy" cv :! strokeStyle 75 畫針 ;
+  : 畫秒針 1 cv :! lineWidth s" red" cv :! strokeStyle 90 畫針 ;
+ 
+  
+  : 清螢幕 s" #ffffff" cv :! fillStyle 0 0 200 200 cv :: fillRect ;
+  : 畫框 1 cv :! lineWidth s" black" cv :! strokeStyle cv :: beginPath RX RY 100 0 PI 2 * 0  cv :: arc cv :: closePath cv :: stroke 
+         2 cv :! lineWidth s" silver" cv :! strokeStyle cv :: beginPath RX RY 90 0 PI 2 * 0  cv :: arc cv :: closePath cv :: stroke 
+  ; 
+  
+  : 加時 hours @ 1+ dup 24 > if 24 - then hours ! ;
+  : 加分 minutes @ 1+ dup 60 > if 加時 60 - then minutes ! ;
+  : 加秒 seconds @ 1+ dup 60 > if 加分 60 - then seconds ! ;
+  
+  50 150 10 RX RY 100 cv :: createRadialGradient value grd  \ 宣告漸層色
+  0 s" red" grd :: addColorStop   \ 製作漸層色
+  1 6 / s" orange" grd :: addColorStop  
+  2 6 / s" yellow" grd :: addColorStop  
+  3 6 / s" green" grd :: addColorStop  
+  5 6 / s" blue" grd :: addColorStop  
+  1  s" violet" grd :: addColorStop  
+       
+  : 畫訊息
+     s" 24pt bold Calibri" cv :! font 
+     grd cv :! fillStyle s" Forth萬歲" 30 160 cv :: fillText 
+  ;
+  : 畫鐘
+    
+    加秒
+    清螢幕
+    畫框
+  \ 畫訊息
+    
+    hours @ 12 mod 5 * minutes @ 12 / +  畫時針
+    minutes @ seconds 60 / + 畫分針
+    seconds @ 畫秒針
+    
+    
+    self 1000 setTimeout
+  ;
+   
+  畫鐘
+  
+
+</textarea>
+<button
+id=”run” onclick="fortheval()">Run</button><br>
+<div
+id="log" style="overflow: auto; height: 250px; width: 100%;" ></div> <!-- 操作記錄, 藍色表示輸入, 黑色表示輸出, 紫色表示系統訊息 -->
+
+</body>
+<script>
+ var i=0;
+
+ var kvm=new KsanaVm();
+ var log=document.getElementById("log");
+ log.innerHTML="<font color='green'>jeforth 雲端易符 Javascript eForth</font><br />\n";
+ var tib=document.getElementById("tib");
+
+ kvm.ticktype=ticktype;
+ function fortheval() {
+    if (!kvm.getcompiling())log.innerHTML+="<br />\n";
+    //log.innerHTML+="<font color='blue'>"+tib.value+"</font>\n";
+    kvm.exec(tib.value);
+    if (!kvm.getcompiling() && !kvm.geterror()){
+      log.innerHTML+="<font color='pink'> ok</font>";
+      log.scrollTop = log.scrollHeight; 
+    }
+ }
+ function ticktype(t){log.innerHTML=log.innerHTML+t;}  // 輸出
+</script>
+</html>
