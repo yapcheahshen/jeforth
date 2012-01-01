@@ -1,6 +1,6 @@
 ﻿/*
 	jeForth
-    A minimalism Forth Implementation in Javascript
+    A minimalist Forth Implementation in Javascript
     BSD license
 	
 	2011/12/23  initial version by yapcheahshen@gmail.com
